@@ -5,11 +5,11 @@ use Phalcon\Mvc\Router; // phalcon class of routing
 
 $router = new Router();
 
-$server = '/niyogyugan_scoring/';
-// $server = 'https://niyogyugan.quezon.gov.ph/';
+// $server = '/niyogyugan_scoring/';
+$server = 'https://niyogyugan.quezonsystems.com/niyogyugan-festival-2024-tabulation-phalcon/niyogyugan-festival-2024-tabulation-phalcon/';
 
 $router->add(
-    $server.'api/auth/login',
+    $server.'auth/login',
     [
         'controller' => 'auth',
         'action'     => 'login'
@@ -18,7 +18,7 @@ $router->add(
 
 // Logout
 $router->add(
-    $server.'api/auth/logout',
+    $server.'auth/logout',
     [
         'controller' => 'auth',
         'action'     => 'logout'
@@ -27,7 +27,7 @@ $router->add(
 
 // Refresh JWT Access Token
 $router->add(
-    $server.'api/auth/refreshToken',
+    $server.'auth/refreshToken',
     [
         'controller' => 'auth',
         'action'     => 'refreshToken'
@@ -36,7 +36,7 @@ $router->add(
 
 // (JWT) Refresh Token Expire
 $router->add(
-    $server.'api/auth/refreshTokenExpire',
+    $server.'auth/refreshTokenExpire',
     [
         'controller' => 'auth',
         'action'     => 'refreshTokenExpire'
@@ -45,7 +45,7 @@ $router->add(
 
 // Backend SessionCheck
 $router->add(
-    $server.'api/auth/sessionCheck',
+    $server.'auth/sessionCheck',
     [
         'controller' => 'auth',
         'action'     => 'sessionCheck'
@@ -54,7 +54,7 @@ $router->add(
 
 // Check if user is logged-in
 $router->add(
-    $server.'api/auth/isLoggedIn',
+    $server.'auth/isLoggedIn',
     [
         'controller' => 'auth',
         'action'     => 'isLoggedIn'
@@ -63,7 +63,7 @@ $router->add(
 
 // Update Profile Picture
 $router->add(
-    $server.'api/auth/updateProfilePic',
+    $server.'auth/updateProfilePic',
     [
         'controller' => 'auth',
         'action'     => 'updateProfilePic'
@@ -72,7 +72,7 @@ $router->add(
 
 // Update Account Password
 $router->add(
-    $server.'api/auth/updatePassword',
+    $server.'auth/updatePassword',
     [
         'controller' => 'auth',
         'action'     => 'updatePassword'
@@ -81,7 +81,7 @@ $router->add(
 
 // Load Leaderboards - Overall Total
 $router->add(
-    $server.'api/leaderboards/load',
+    $server.'leaderboards/load',
     [
         'controller' => 'leaderboards',
         'action'     => 'load'
@@ -90,7 +90,7 @@ $router->add(
 
 // Load Contest Results Per Municipality
 $router->add(
-    $server.'api/leaderboards/loadContestResultsPerMunicipality',
+    $server.'leaderboards/loadContestResultsPerMunicipality',
     [
         'controller' => 'leaderboards',
         'action'     => 'loadContestResultsPerMunicipality'
@@ -99,7 +99,7 @@ $router->add(
 
 // Load List of Activites
 $router->add(
-    $server.'api/activities/loadActivities',
+    $server.'activities/loadActivities',
     [
         'controller' => 'activities',
         'action'     => 'loadActivities'
@@ -108,7 +108,7 @@ $router->add(
 
 // Load Guidelines
 $router->add(
-    $server.'api/guidelines/loadGuidelines',
+    $server.'guidelines/loadGuidelines',
     [
         'controller' => 'guidelines',
         'action'     => 'loadGuidelines'

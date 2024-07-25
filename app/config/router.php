@@ -5,8 +5,8 @@ use Phalcon\Mvc\Router; // phalcon class of routing
 
 $router = new Router();
 
-// $server = '/niyogyugan_scoring/';
-$server = 'https://niyogyugan.quezonsystems.com/niyogyugan-festival-2024-tabulation-phalcon/niyogyugan-festival-2024-tabulation-phalcon/';
+$server = '/niyogyugan-festival-2024-tabulation-phalcon/niyogyugan-festival-2024-tabulation-phalcon/';
+// $server = 'https://niyogyugan.quezonsystems.com/niyogyugan-festival-2024-tabulation-phalcon/niyogyugan-festival-2024-tabulation-phalcon/';
 
 $router->add(
     $server.'auth/login',

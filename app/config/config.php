@@ -11,8 +11,8 @@ return new \Phalcon\Config([
     'database' => [
         'adapter'     => 'Mysql',
         'host'        => 'localhost',
-        'username'    => 'qsadmin_quezonsystemsivan', // qsadmin_quezonsystemsivan
-        'password'    => '(iR$unR6-Tt,',// (iR$unR6-Tt,
+        'username'    => 'root', // qsadmin_quezonsystemsivan
+        'password'    => 'root',// (iR$unR6-Tt,
         'dbname'      => 'qsadmin_niyogyugan_scoring',
         'charset'     => 'utf8',
     ],

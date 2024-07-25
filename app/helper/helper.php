@@ -9,12 +9,12 @@ use Phalcon\Filter\FilterFactory;
 class helper extends Injectable {
 
     public function auditLog($uid,$transaction_type,$msg) {
-        $date_today = new DateTime("now", new DateTimeZone("Asia/Manila")); //current datetime
-        $log = new AuditTrail();
-        $log->timestamp  = $date_today->format("Y-m-d H:i:s");
+        // $date_today = new DateTime("now", new DateTimeZone("Asia/Manila")); //current datetime
+        $log = new AccountActivityLogs();
+        // $log->timestamp  = $date_today->format("Y-m-d H:i:s");
         $log->username = $uid;
-        $log->transaction_type = $transaction_type;
-        $log->event  = $msg;
+        $log->action_type = $transaction_type;
+        $log->action  = $msg;
         $log->save();
     }
 

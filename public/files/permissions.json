@@ -1,0 +1,75 @@
+{
+    "permission": [
+      {
+        "id": 1,
+        "permission": "Dashboard",
+        "isSelected": false,
+        "isEditable": false,
+        "sub_permission": [
+          {
+            "id": 1.01,
+            "permission": "Update Profile Picture",
+            "isSelected": false,
+            "isEditable": false
+          },
+          {
+            "id": 1.02,
+            "permission": "Update Password",
+            "isSelected": false,
+            "isEditable": false
+          },
+          {
+            "id": 1.03,
+            "permission": "Home/Statistics",
+            "isSelected": false,
+            "isEditable": false
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "permission": "Activity Logs",
+        "isSelected": false,
+        "isEditable": false,
+        "sub_permission": []
+      },
+      {
+        "id": 3,
+        "permission": "Accounts",
+        "isSelected": false,
+        "isEditable": false,
+        "sub_permission": [
+          {
+            "id": 3.01,
+            "permission": "Add Account",
+            "isSelected": false,
+            "isEditable": false
+          },
+          {
+            "id": 3.02,
+            "permission": "Update Basic Info",
+            "isSelected": false,
+            "isEditable": false
+          },
+          {
+            "id": 3.03,
+            "permission": "Update Password",
+            "isSelected": false,
+            "isEditable": false
+          },
+          {
+            "id": 3.04,
+            "permission": "Update Profile Picture",
+            "isSelected": false,
+            "isEditable": false
+          },
+          {
+            "id": 3.05,
+            "permission": "Reset Login Attempts",
+            "isSelected": false,
+            "isEditable": false
+          }
+        ]
+      }
+    ]
+  }

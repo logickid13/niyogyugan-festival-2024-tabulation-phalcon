@@ -369,9 +369,9 @@ class AuthController extends \Phalcon\Mvc\Controller
 
 
                                 // reset attempts
-                                $update_attempts = LoginAttempt::findFirst(
+                                $update_attempts = Users::findFirst(
                                     [
-                                        "column" => "username,attempt_count",
+                                        "column" => "attempt_count",
                                         "conditions" => "username = :u_n:",
                                         "bind" => [
                                             "u_n" => $username
@@ -533,12 +533,12 @@ class AuthController extends \Phalcon\Mvc\Controller
 
         if ($this->request->isPost()) {
 
-            // Audit Log
-            $uid = $this->session->get("acc_uid");
-            $transaction_type = "logout";
-            $msg  = $this->session->get('acc_name')."(".$uid.") logged-out.";
-            // Save Audit Log. Function is globally written on 'helper/helper.php'
-            $save_to_auditlog  = (new helper())->auditLog($uid,$transaction_type,$msg);
+           // activity log
+           $uid = $this->session->get("acc_uid");
+           $transaction_type = "LOGOUT";
+           $msg  = $this->session->get('acc_name')."(".$uid.") logged-out.";
+           // Save Audit Log. Function is globally written on 'helper/helper.php'
+           $save_to_auditlog  = (new helper())->auditLog($uid,$transaction_type,$msg);
             
             $rawBody = $this->request->getJsonRawBody(true); // gets Gets decoded JSON HTTP raw request body, if set to 'true', will output as associative array
 
@@ -556,7 +556,9 @@ class AuthController extends \Phalcon\Mvc\Controller
                     
                     $grant_type = $value;
 
-                    if ($grant_type == 'logout') {  
+                    if ($grant_type == 'logout') { 
+
+
                         // remove sessions on backend  
                         $this->session->remove('acc_uid');
                         $this->session->remove('acc_name');
@@ -575,6 +577,8 @@ class AuthController extends \Phalcon\Mvc\Controller
                             $current_cookie = $this->cookies->get('XSRF-TOKEN');
                             $current_cookie->delete();
                         }
+
+
 
                         $arr[] = array('status' => "logout_success");
                     }

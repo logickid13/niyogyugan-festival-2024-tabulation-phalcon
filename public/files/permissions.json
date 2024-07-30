@@ -70,6 +70,26 @@
             "isEditable": false
           }
         ]
+      },
+      {
+        "id": 4,
+        "permission": "Scoring",
+        "isSelected": false,
+        "isEditable": false,
+        "sub_permission": [
+          {
+            "id": 4.01,
+            "permission": "Add Score",
+            "isSelected": false,
+            "isEditable": false
+          },
+          {
+            "id": 4.02,
+            "permission": "Update Score",
+            "isSelected": false,
+            "isEditable": false
+          }
+        ]
       }
     ]
-  }
+}

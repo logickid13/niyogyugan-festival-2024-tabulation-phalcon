@@ -115,6 +115,24 @@ $router->add(
     ]
 );
 
+// Scoring Configuration - Load Municipality
+$router->add(
+    $server.'scoring/loadMunicipality',
+    [
+        'controller' => 'scoring',
+        'action'     => 'loadMunicipality'
+    ]
+);
+
+// Scoring Configuration - Load Contest
+$router->add(
+    $server.'scoring/loadContest',
+    [
+        'controller' => 'scoring',
+        'action'     => 'loadContest'
+    ]
+);
+
 
 
 $router->handle($_SERVER['REQUEST_URI']);

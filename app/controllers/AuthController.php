@@ -9,9 +9,120 @@ use Phalcon\Security\JWT\Signer\Hmac;
 use Phalcon\Security\JWT\Exceptions\ValidatorException;
 use Phalcon\Security\JWT\Token\Parser;
 use Phalcon\Security\JWT\Validator;
+use Phalcon\Mvc\Dispatcher;
 
 class AuthController extends \Phalcon\Mvc\Controller
 {
+
+    public function beforeExecuteRoute(Dispatcher $dispatcher) 
+    {
+      $arr = array();
+      $cookies_arr = array();
+      $accepted_routes = [
+        "updateProfilePic",
+        "updatePassword",
+      ];
+      $action_name = $dispatcher->getActionName();
+
+      if (in_array($action_name, $accepted_routes)) {
+          $http_auth_header = $this->request->getHeader('HTTP_AUTHORIZATION');
+
+          $csrf_header = $this->request->getHeader('X-XSRF-TOKEN');
+          $cookie_header = $this->request->getHeader('Cookie');
+          $headerCookies = explode('; ', $cookie_header);
+          
+          foreach($headerCookies as $itm) {
+              list($key, $val) = explode('=', $itm, 2);
+              $cookies_arr[$key] = $val;
+          }
+
+          $cookie_value = urldecode($cookies_arr['XSRF-TOKEN']);
+
+          if (preg_match('/Bearer\s(\S+)/', $http_auth_header, $matches)) {
+              // alternately '/Bearer\s((.*)\.(.*)\.(.*))/' to separate each JWT string
+              $actual_token =  $matches[1];
+          }
+
+          $session_actual_token = $this->session->get("jwt_access_token");
+          $permission = $this->session->get("permission");
+          $decoded_permission = json_decode($permission);
+
+          // check if account has permission
+          if ($action_name == "updateProfilePic") {
+            if (!in_array(1.01, $decoded_permission)) {
+                $this->view->disable();
+                $this->response->setStatusCode(403, 'Forbidden');
+                $arr[] = array('status' => 'Forbidden', 'code' => 403);
+                $this->response->setJsonContent($arr);
+                $this->response->send(); 
+                return false;
+            }
+          } else if ($action_name === "updatePassword") {
+            if (!in_array(1.02, $decoded_permission)) {
+                $this->view->disable();
+                $this->response->setStatusCode(403, 'Forbidden');
+                $arr[] = array('status' => 'Forbidden', 'code' => 403);
+                $this->response->setJsonContent($arr);
+                $this->response->send(); 
+                return false;
+            }
+          } else if ($csrf_header != $cookie_value) { // if somehow local storage is deleted(tokens, logged_status), but still logged in on backend(session exist)
+              $this->view->disable();
+              $this->response->setStatusCode(403, 'Forbidden');
+              $arr[] = array('status' => 'Forbidden', 'code' => 403);
+              $this->response->setJsonContent($arr);
+              $this->response->send(); 
+              return false;
+          } else if (empty($actual_token) || $actual_token !== $session_actual_token) {
+              $this->view->disable();
+              $this->response->setStatusCode(403, 'Forbidden');
+              $arr[] = array('status' => 'Forbidden', 'code' => 403);
+              $this->response->setJsonContent($arr);
+              $this->response->send(); 
+              return false;
+          } else {
+              $audience = $this->session->get('jwt_audience');
+              $now = new DateTimeImmutable('now', new DateTimeZone('Asia/Manila'));
+              $issued = $now->getTimestamp();
+              $notBefore = $now->modify('-1 minute')->getTimestamp();
+              $expires = $now->getTimestamp();
+              $id = $this->session->get('acc_uid');
+              $issuer = $this->session->get('jwt_issuer'); 
+              $fullname = $this->session->get('acc_name');
+
+              $signer = new Hmac('sha512');
+              $passphrase = $this->session->get('jwt_passphrase');
+
+              $parser = new Parser();
+              $tokenObject = $parser->parse($actual_token);
+
+              // Check Refresh Token Validity
+              try {
+                  $validator = new Validator($tokenObject, 100); // allow for a time shift of 100
+                  $validator
+                      ->validateAudience($audience)
+                      ->validateExpiration($expires)
+                      ->validateId($id)
+                      ->validateIssuedAt($issued)
+                      ->validateIssuer($issuer)
+                      ->validateNotBefore($notBefore)
+                      ->validateSignature($signer, $passphrase)
+                  ;
+                  return true;
+              } catch (\Exception $ex) {
+                  $this->view->disable();
+                  $this->response->setStatusCode(401, 'Unauthorized');
+                  $arr[] = array("code" => $ex->getCode(), "message" => $ex->getMessage());
+                  $this->response->setJsonContent($arr);
+                  $this->response->send(); 
+                  return false;
+              } 
+
+          }
+
+      }
+      return true;
+    } 
 
     public function indexAction()
     {

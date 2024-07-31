@@ -498,4 +498,80 @@ class helper extends Injectable {
         return $arr;
     }
 
+    public function loadMunicipalities()
+    {
+        $arr = array();
+        $loadMunic = Municipalities::find();
+
+        foreach ($loadMunic as $key) {
+            $arr[] = array(
+                "munic_id" => $key->munic_id,
+                "munic_name" => $key->munic_name
+            );
+        }
+
+        return $arr;
+    }
+
+    public function loadContests()
+    {
+        $arr = array();
+        $loadContest = Contests::find();
+
+        foreach ($loadContest as $key) {
+            $arr[] = array(
+                "c_id" => $key->c_id,
+                "c_name" => $key->c_name
+            );
+        }
+
+        return $arr;
+    }
+
+    public function getCurrentScore($municipality_id,$contest_id)
+    {
+        $result = array();
+        $get_result = Scores::find(
+            [
+                'column' => 's_id,s_score',
+                'conditions' => 's_munic = :sm: AND s_contest = :sc:',
+                'bind' => [
+                    'sm' => $municipality_id,
+                    'sc' => $contest_id
+                ]
+            ]
+        );
+
+        foreach ($get_result as $val) {
+            $result[] = array(
+                's_id' => $val->s_id,
+                's_score' => $val->s_score,
+            );
+        }
+
+        return $result;
+    }
+
+    public function addToCurrentScore($rec_id,$updated_current_score)
+    {
+        $update_query = Scores::findFirst(
+            [
+                'conditions' => 's_id = :sid:',
+                'bind' => [
+                    'sid' => $rec_id
+                ]
+            ]
+        );
+
+        $update_query->s_score = $updated_current_score;
+
+        if ($update_query->update() == false) {
+            $arr[] = array('status' => 'fail');
+        } else {
+            $arr[] = array('status' => 'success');
+        }
+
+        return $arr;
+    }
+
 }

@@ -133,6 +133,24 @@ $router->add(
     ]
 );
 
+// Scoring Configuration - Get Current Score
+$router->add(
+    $server.'scoring/getCurrentScore',
+    [
+        'controller' => 'scoring',
+        'action'     => 'getCurrentScore'
+    ]
+);
+
+// Scoring Configuration - Add To Current Score
+$router->add(
+    $server.'scoring/addToCurrentScore',
+    [
+        'controller' => 'scoring',
+        'action'     => 'addToCurrentScore'
+    ]
+);
+
 
 
 $router->handle($_SERVER['REQUEST_URI']);

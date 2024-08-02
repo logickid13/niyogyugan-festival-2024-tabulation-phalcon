@@ -574,4 +574,27 @@ class helper extends Injectable {
         return $arr;
     }
 
+
+    public function updateCurrentScore($rec_id,$updated_current_score)
+    {
+        $update_query = Scores::findFirst(
+            [
+                'conditions' => 's_id = :sid:',
+                'bind' => [
+                    'sid' => $rec_id
+                ]
+            ]
+        );
+
+        $update_query->s_score = $updated_current_score;
+
+        if ($update_query->update() == false) {
+            $arr[] = array('status' => 'fail');
+        } else {
+            $arr[] = array('status' => 'success');
+        }
+
+        return $arr;
+    }
+
 }

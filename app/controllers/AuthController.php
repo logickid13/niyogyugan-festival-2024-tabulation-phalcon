@@ -27,7 +27,7 @@ class AuthController extends \Phalcon\Mvc\Controller
       if (in_array($action_name, $accepted_routes)) {
           $http_auth_header = $this->request->getHeader('HTTP_AUTHORIZATION');
 
-          $csrf_header = $this->request->getHeader('X-XSRF-TOKEN');
+          $csrf_header = $this->request->getHeader('x-csrf-token');
           $cookie_header = $this->request->getHeader('Cookie');
           $headerCookies = explode('; ', $cookie_header);
           

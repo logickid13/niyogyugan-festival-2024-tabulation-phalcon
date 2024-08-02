@@ -151,6 +151,50 @@ $router->add(
     ]
 );
 
+// Scoring Configuration - Update Current Score
+$router->add(
+    $server.'scoring/updateCurrentScore',
+    [
+        'controller' => 'scoring',
+        'action'     => 'updateCurrentScore'
+    ]
+);
+
+// Consolation Configuration - Load Municipality
+$router->add(
+    $server.'consolation/loadMunicipality',
+    [
+        'controller' => 'consolation',
+        'action'     => 'loadMunicipality'
+    ]
+);
+
+// Consolation Configuration - Load Contest
+$router->add(
+    $server.'consolation/loadContest',
+    [
+        'controller' => 'consolation',
+        'action'     => 'loadContest'
+    ]
+);
+
+// Consolation Configuration - Update Scores of Multiple Municipalities per Contest
+$router->add(
+    $server.'consolation/updateConsolationScore',
+    [
+        'controller' => 'consolation',
+        'action'     => 'updateConsolationScore'
+    ]
+);
+
+$router->add(
+    $server.'consolation/shit',
+    [
+        'controller' => 'consolation',
+        'action'     => 'shit'
+    ]
+);
+
 
 
 $router->handle($_SERVER['REQUEST_URI']);

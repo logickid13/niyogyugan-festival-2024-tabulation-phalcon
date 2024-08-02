@@ -9,7 +9,7 @@ use Phalcon\Security\JWT\Token\Parser;
 use Phalcon\Security\JWT\Validator;
 use Phalcon\Mvc\Dispatcher;
 
-class ScoringController extends \Phalcon\Mvc\Controller
+class ConsolationController extends \Phalcon\Mvc\Controller
 {
 
     public function beforeExecuteRoute(Dispatcher $dispatcher) 
@@ -17,8 +17,7 @@ class ScoringController extends \Phalcon\Mvc\Controller
       $arr = array();
       $cookies_arr = array();
       $accepted_routes = [
-        "addToCurrentScore",
-        "updateCurrentScore",
+        "",
       ];
       $action_name = $dispatcher->getActionName();
 
@@ -46,17 +45,8 @@ class ScoringController extends \Phalcon\Mvc\Controller
           $decoded_permission = json_decode($permission);
 
           // check if account has permission
-          if ($action_name == "addToCurrentScore") {
-            if (!in_array(4.01, $decoded_permission)) {
-                $this->view->disable();
-                $this->response->setStatusCode(403, 'Forbidden');
-                $arr[] = array('status' => 'Forbidden', 'code' => 403);
-                $this->response->setJsonContent($arr);
-                $this->response->send(); 
-                return false;
-            }
-          } else if ($action_name == "updateCurrentScore") {
-            if (!in_array(4.02, $decoded_permission)) {
+          if ($action_name == "") {
+            if (!in_array(5.01, $decoded_permission)) {
                 $this->view->disable();
                 $this->response->setStatusCode(403, 'Forbidden');
                 $arr[] = array('status' => 'Forbidden', 'code' => 403);
@@ -127,6 +117,26 @@ class ScoringController extends \Phalcon\Mvc\Controller
 
     }
 
+    public function shitAction()
+    {
+        $this->view->disable();
+        $arr = array();
+
+        $username = "9999";
+
+        $base64_encrypt = $this->crypt->encryptBase64($username);
+
+        $password_hash = $this->security->hash($username);
+
+        $arr[] = array(
+            "base64_encode" => $base64_encrypt,
+            "password_hash" => $password_hash
+        );
+
+        $this->response->setJsonContent($arr);
+        $this->response->send();
+    }
+
     public function loadMunicipalityAction()
     {
         $this->view->disable();
@@ -151,9 +161,12 @@ class ScoringController extends \Phalcon\Mvc\Controller
         $this->response->send();
     }
 
-    public function getCurrentScoreAction()
+
+    public function updateConsolationScoreAction()
     {
         $this->view->disable();
+
+        $arr = array();
 
         if ($this->request->isPost()) {
 
@@ -163,143 +176,66 @@ class ScoringController extends \Phalcon\Mvc\Controller
             $rawBody = $this->request->getJsonRawBody(true);
 
             foreach ($rawBody as $key => $value) {
+
+                if ($key == 'municipality_name') {
+                    $municipality_name = $locator->sanitize($value, ['striptags', 'string']);
+                }
+
+                if ($key == 'contest_name') {
+                    $contest_name = $locator->sanitize($value, ['striptags', 'string']);
+                }
 
                 if ($key == 'municipality_id') {
                     $municipality_id = $locator->sanitize($value, ['striptags', 'string']);
                 }
 
-                if ($key == 'contest_id') {
-                    $contest_id = $locator->sanitize($value, ['striptags', 'string']);
-                }
-            }
-
-            $getCurrentScore = (new helper())->getCurrentScore($municipality_id,$contest_id);
-
-        }
-
-        $this->response->setJsonContent($getCurrentScore);
-        $this->response->send();
-    }
-
-    public function addToCurrentScoreAction()
-    {
-        $this->view->disable();
-        $final_arr = array();
-
-        if ($this->request->isPost()) {
-            $factory = new FilterFactory();
-            $locator = $factory->newInstance();
-
-            $rawBody = $this->request->getJsonRawBody(true);
-
-            foreach ($rawBody as $key => $value) {
-
-                if ($key == 'rec_id') {
-                    $rec_id = $locator->sanitize($value, ['striptags', 'string']);
+                if ($key == 'munic_arr') {
+                    $munic_arr = $value;
                 }
 
-                if ($key == 'current_score') {
-                    $current_score = $locator->sanitize($value, ['striptags', 'string']);
+                if ($key == 'municipality_id') {
+                    $municipality_id = $locator->sanitize($value, ['striptags', 'string']);
                 }
 
                 if ($key == 'score_to_be_added') {
                     $score_to_be_added = $locator->sanitize($value, ['striptags', 'string']);
                 }
-
-                if ($key == 'municipality') {
-                    $municipality = $locator->sanitize($value, ['striptags', 'string']);
-                }
-
-                if ($key == 'contest') {
-                    $contest = $locator->sanitize($value, ['striptags', 'string']);
-                }
             }
 
-            $updated_current_score = (int) $current_score + (int) $score_to_be_added;
+            $decoded_munic_arr = json_decode($munic_arr, true);
 
-            $updated_score = (new helper())->addToCurrentScore($rec_id,$updated_current_score);
+            foreach ($decoded_munic_arr as $value) {
+                $munic_id = $value["municipality_id"];
+                $contest_id = $value["contest_id"];
 
-            $status = $updated_score[0]['status'];
+                $update_query = Scores::findFirst(
+                    [
+                        "column" => "s_score",
+                        "conditions" => "s_munic = :sm: AND s_contest = :sc:",
+                        "bind" => [
+                            "sm" => $munic_id,
+                            "sc" => $contest_id
+                        ]
+                    ]
+                );
 
-            if ($status == 'fail') {
-                $final_arr[] = array('status' => 'fail');
-            } else if ($status == 'success') {
+                $current_score = (int) $update_query->s_score;
+                $updated_score = $current_score + (int) $score_to_be_added;
 
-                // Audit Log
-                $uid = $this->session->get("acc_uid");
-                $transaction_type = (string) 'UPDATE';
-                $msg  = "UPDATED Contest(".$contest.") score of Municipality/City (".$municipality.") from ".$current_score." to ".$updated_current_score;
-                // Save Audit Log. Function is globally written on 'helper/helper.php'
-                $save_to_auditlog  = (new helper())->auditLog($uid,$transaction_type,$msg);
+                $update_query->s_score = (int) $updated_score;
+                $update_query->update();
+                
+            }
 
-                $final_arr[] = array('status' => 'success');
-            } 
+            $arr[] = array("status" => "success");
 
         }
 
-        $this->response->setJsonContent($final_arr);
+        $this->response->setJsonContent($arr);
         $this->response->send();
-
     }
 
-    public function updateCurrentScoreAction()
-    {
-        $this->view->disable();
-        $final_arr = array();
     
-        if ($this->request->isPost()) {
-            $factory = new FilterFactory();
-            $locator = $factory->newInstance();
-
-            $rawBody = $this->request->getJsonRawBody(true);
-
-            foreach ($rawBody as $key => $value) {
-
-                if ($key == 'rec_id') {
-                    $rec_id = $locator->sanitize($value, ['striptags', 'string']);
-                }
-
-                if ($key == 'current_score') {
-                    $current_score = $locator->sanitize($value, ['striptags', 'string']);
-                }
-
-                if ($key == 'score_to_be_added') {
-                    $score_to_be_added = $locator->sanitize($value, ['striptags', 'string']);
-                }
-
-                if ($key == 'municipality') {
-                    $municipality = $locator->sanitize($value, ['striptags', 'string']);
-                }
-
-                if ($key == 'contest') {
-                    $contest = $locator->sanitize($value, ['striptags', 'string']);
-                }
-            }
-
-            $updated_current_score = (int) $score_to_be_added;
-
-            $updated_score = (new helper())->updateCurrentScore($rec_id,$updated_current_score);
-
-            $status = $updated_score[0]['status'];
-
-            if ($status == 'fail') {
-                $final_arr[] = array('status' => 'fail');
-            } else if ($status == 'success') {
-
-                // Audit Log
-                $uid = $this->session->get("acc_uid");
-                $transaction_type = (string) 'UPDATE';
-                $msg  = "UPDATED Contest(".$contest.") score of Municipality/City (".$municipality.") from ".$current_score." to ".$updated_current_score;
-                // Save Audit Log. Function is globally written on 'helper/helper.php'
-                $save_to_auditlog  = (new helper())->auditLog($uid,$transaction_type,$msg);
-
-                $final_arr[] = array('status' => 'success');
-            } 
-        }
-
-        $this->response->setJsonContent($final_arr);
-        $this->response->send();
-    }
 
 }
 

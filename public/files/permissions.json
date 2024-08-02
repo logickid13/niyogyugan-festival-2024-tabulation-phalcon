@@ -90,6 +90,13 @@
             "isEditable": false
           }
         ]
+      },
+      {
+        "id": 5,
+        "permission": "Consolation Prizes",
+        "isSelected": false,
+        "isEditable": false,
+        "sub_permission": []
       }
     ]
 }

@@ -597,4 +597,175 @@ class helper extends Injectable {
         return $arr;
     }
 
+    public function loadActivityLogs($query,$sort,$order,$currentPage,$pageSize) 
+    {
+        $arr = array();
+        $offset = (int) $currentPage * (int) $pageSize;
+        $order = ($order == 'asc') ? "ASC" : "DESC";
+            
+        foreach ($query as $key => $value) {
+            if ($key == 'username') {
+                $username = $value;
+            }
+
+            if ($key == 'start_dt') {
+                $start_dt = $value;
+            }
+
+            if ($key == 'end_dt') {
+                $end_dt = $value;
+            }
+
+            if ($key == 'action_type') {
+                $action_type = $value;
+            }
+        }
+
+        // actual records
+        $phql_values = array(
+            "page_size" => $offset,
+            "ofs" => $pageSize
+        );
+
+        $phql_binding_type = array(
+            "page_size" => \Phalcon\Db\Column::BIND_PARAM_INT,
+            "ofs" => \Phalcon\Db\Column::BIND_PARAM_INT
+        );
+
+        $phql = "SELECT AccountActivityLogs.log_id,AccountActivityLogs.timestamp,AccountActivityLogs.username,AccountActivityLogs.action_type,AccountActivityLogs.action,(SELECT Users.fullname FROM Users WHERE Users.username = AccountActivityLogs.username LIMIT 1) AS fullname FROM AccountActivityLogs WHERE 1=1 ";
+
+        if ($username != "" || $username != null) {
+            $offset = (int) 0 * (int) $pageSize;
+            $phql .= "AND AccountActivityLogs.username = :uname: ";
+            $phql_values["uname"] = $username;
+            $phql_binding_type["uname"] = \Phalcon\Db\Column::BIND_PARAM_STR;
+        }
+
+        if (($start_dt != "" || $start_dt != null) && ($end_dt != "" || $end_dt != null)) {
+            $offset = (int) 0 * (int) $pageSize;
+            $phql .= "AND CAST(AccountActivityLogs.timestamp AS DATE) BETWEEN :start: AND :end: ";
+            $phql_values["start"] = $start_dt;
+            $phql_values["end"] = $end_dt;
+            $phql_binding_type["start"] = \Phalcon\Db\Column::BIND_PARAM_STR;
+            $phql_binding_type["end"] = \Phalcon\Db\Column::BIND_PARAM_STR;
+        }
+
+        if ($action_type != "" || $action_type != null) {
+            $offset = (int) 0 * (int) $pageSize;
+            $phql .= "AND AccountActivityLogs.action_type = :a_type: ";
+            $phql_values["a_type"] = $action_type;
+            $phql_binding_type["a_type"] = \Phalcon\Db\Column::BIND_PARAM_STR;
+        }
+
+        $phql .= " ORDER BY AccountActivityLogs.".$sort." ".$order." LIMIT :page_size:,:ofs:";
+
+        $load_audit_logs = $this->modelsManager->executeQuery(
+            $phql,
+            $phql_values,
+            $phql_binding_type
+        );
+
+        foreach ($load_audit_logs as $row) {
+            $arr[] = array(
+                'log_id' => $row->log_id,
+                'timestamp' => $row->timestamp,
+                'username' => $row->fullname."(".$row->username.")",
+                'action' => $row->action
+            );
+        }
+
+        return $arr; 
+    }
+
+    public function loadActivityLogsCount($query,$sort,$order,$currentPage,$pageSize) 
+    {
+
+        $offset = (int) $currentPage * (int) $pageSize;
+        $order = ($order == 'asc') ? "ASC" : "DESC";
+            
+        foreach ($query as $key => $value) {
+            if ($key == 'username') {
+                $username = $value;
+            }
+
+            if ($key == 'start_dt') {
+                $start_dt = $value;
+            }
+
+            if ($key == 'end_dt') {
+                $end_dt = $value;
+            }
+
+            if ($key == 'action_type') {
+                $action_type = $value;
+            }
+        }
+
+        // actual records
+        $phql_values = array();
+
+        $phql_binding_type = array();
+
+        $phql = "SELECT COUNT(*) AS actual_count FROM AccountActivityLogs WHERE 1=1 ";
+
+        if ($username != "" || $username != null) {
+            $offset = (int) 0 * (int) $pageSize;
+            $phql .= "AND AccountActivityLogs.username = :uname: ";
+            $phql_values["uname"] = $username;
+            $phql_binding_type["uname"] = \Phalcon\Db\Column::BIND_PARAM_STR;
+        }
+
+        if (($start_dt != "" || $start_dt != null) && ($end_dt != "" || $end_dt != null)) {
+            $offset = (int) 0 * (int) $pageSize;
+            $phql .= "AND CAST(AccountActivityLogs.timestamp AS DATE) BETWEEN :start: AND :end: ";
+            $phql_values["start"] = $start_dt;
+            $phql_values["end"] = $end_dt;
+            $phql_binding_type["start"] = \Phalcon\Db\Column::BIND_PARAM_STR;
+            $phql_binding_type["end"] = \Phalcon\Db\Column::BIND_PARAM_STR;
+        }
+
+        if ($action_type != "" || $action_type != null) {
+            $offset = (int) 0 * (int) $pageSize;
+            $phql .= "AND AccountActivityLogs.action_type = :a_type: ";
+            $phql_values["a_type"] = $action_type;
+            $phql_binding_type["a_type"] = \Phalcon\Db\Column::BIND_PARAM_STR;
+        }
+
+        $phql .= " ORDER BY AccountActivityLogs.".$sort." ".$order;
+
+        $total_pages = $this->modelsManager->executeQuery(
+            $phql,
+            $phql_values,
+            $phql_binding_type
+        )->getFirst();
+
+        $total_rows = $total_pages->actual_count;
+        $total_pages = ceil((int) $total_rows / (int) $pageSize); 
+
+        $arr = array("count" => $total_rows, "total_pages" => $total_pages);
+
+        return $arr;
+
+    }
+
+    public function loadUsersAutoComplete()
+    {
+        $load_users = Users::find(
+            [
+                'column' => 'id_no,username,fullname',
+                'order' => 'fullname ASC'
+            ]
+        );
+
+        foreach ($load_users as $key => $value) {
+            $arr[] = array(
+                "id_no" => $value->id_no,
+                "username" => $value->username,
+                "fullname" => $value->fullname
+            );
+        }
+
+        return $arr;
+    }
+
 }

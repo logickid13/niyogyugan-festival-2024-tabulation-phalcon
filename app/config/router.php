@@ -187,6 +187,24 @@ $router->add(
     ]
 );
 
+// Activity Logs -Load Logs
+$router->add(
+    $server.'activitylogs/load',
+    [
+        'controller' => 'activitylogs',
+        'action'     => 'load'
+    ]
+);
+
+// Activity Logs - Users Autocomplete
+$router->add(
+    $server.'activitylogs/loadUsersAutoComplete',
+    [
+        'controller' => 'activitylogs',
+        'action'     => 'loadUsersAutoComplete'
+    ]
+);
+
 $router->add(
     $server.'consolation/shit',
     [

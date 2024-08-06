@@ -320,6 +320,7 @@ class helper extends Injectable {
             $new_account->profile_pic = "no_picture";
             $new_account->permission = $permission_arr;
             $new_account->sign_key = $this->crypt->encryptBase64($username);
+            $new_account->attempt_count = (int) 0;
             $new_account->active = (int) 1;
 
             if ($new_account->save() == false) {
@@ -366,6 +367,7 @@ class helper extends Injectable {
             $new_account->profile_pic = $fileName;
             $new_account->permission = $permission_arr;
             $new_account->sign_key = $this->crypt->encryptBase64($username);
+            $new_account->attempt_count = (int) 0;
             $new_account->active = (int) 1;
 
             if ($new_account->save() == false) {

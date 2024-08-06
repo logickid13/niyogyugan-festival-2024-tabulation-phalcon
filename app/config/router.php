@@ -205,6 +205,33 @@ $router->add(
     ]
 );
 
+// Accounts - Load
+$router->add(
+    $server.'accounts/load',
+    [
+        'controller' => 'accounts',
+        'action'     => 'load'
+    ]
+);
+
+// Accounts - New Account(Without Profile Picture)
+$router->add(
+    $server.'accounts/newAccountnoProfilePic',
+    [
+        'controller' => 'accounts',
+        'action'     => 'newAccountnoProfilePic'
+    ]
+);
+
+// Accounts - New Account(With Profile Picture)
+$router->add(
+    $server.'accounts/newAccountWithProfilePic',
+    [
+        'controller' => 'accounts',
+        'action'     => 'newAccountWithProfilePic'
+    ]
+);
+
 $router->add(
     $server.'consolation/shit',
     [

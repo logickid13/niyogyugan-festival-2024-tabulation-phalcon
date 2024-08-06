@@ -96,7 +96,14 @@
         "permission": "Consolation Prizes",
         "isSelected": false,
         "isEditable": false,
-        "sub_permission": []
+        "sub_permission": [
+          {
+            "id": 5.01,
+            "permission": "Add Consolation",
+            "isSelected": false,
+            "isEditable": false
+          }
+        ]
       }
     ]
 }

@@ -17,7 +17,7 @@ class ConsolationController extends \Phalcon\Mvc\Controller
       $arr = array();
       $cookies_arr = array();
       $accepted_routes = [
-        "",
+        "updateConsolationScore",
       ];
       $action_name = $dispatcher->getActionName();
 
@@ -45,7 +45,7 @@ class ConsolationController extends \Phalcon\Mvc\Controller
           $decoded_permission = json_decode($permission);
 
           // check if account has permission
-          if ($action_name == "") {
+          if ($action_name == "updateConsolationScore") {
             if (!in_array(5.01, $decoded_permission)) {
                 $this->view->disable();
                 $this->response->setStatusCode(403, 'Forbidden');

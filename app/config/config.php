@@ -12,7 +12,7 @@ return new \Phalcon\Config([
         'adapter'     => 'Mysql',
         'host'        => 'localhost',
         'username'    => 'root', // qsadmin_quezonsystemsivan
-        'password'    => 'root',// (iR$unR6-Tt,
+        'password'    => 'ivanpicto',// (iR$unR6-Tt,
         'dbname'      => 'qsadmin_niyogyugan_scoring',
         'charset'     => 'utf8',
     ],

@@ -268,6 +268,15 @@ $router->add(
     ]
 );
 
+// News and Updates - Load
+$router->add(
+    $server.'news/load',
+    [
+        'controller' => 'news',
+        'action'     => 'load'
+    ]
+);
+
 $router->add(
     $server.'consolation/shit',
     [

@@ -232,6 +232,42 @@ $router->add(
     ]
 );
 
+// Accounts - Update(Basic Info)
+$router->add(
+    $server.'accounts/updateBasicInfo',
+    [
+        'controller' => 'accounts',
+        'action'     => 'updateBasicInfo'
+    ]
+);
+
+// Accounts - Update(Profile Picture)
+$router->add(
+    $server.'accounts/updateProfilePic',
+    [
+        'controller' => 'accounts',
+        'action'     => 'updateProfilePic'
+    ]
+);
+
+// Accounts - Update(Password)
+$router->add(
+    $server.'accounts/updatePassword',
+    [
+        'controller' => 'accounts',
+        'action'     => 'updatePassword'
+    ]
+);
+
+// Accounts - Update(Login Attempts)
+$router->add(
+    $server.'accounts/unlock',
+    [
+        'controller' => 'accounts',
+        'action'     => 'unlock'
+    ]
+);
+
 $router->add(
     $server.'consolation/shit',
     [

@@ -321,7 +321,252 @@ class AccountsController extends \Phalcon\Mvc\Controller
 
     }
 
+    public function updateBasicInfoAction()
+    {
+        $this->view->disable();
+        $arr = array();
 
+        if ($this->request->isPost()) {
+            $factory = new FilterFactory();
+            $locator = $factory->newInstance();
+
+            $rawBody = $this->request->getJsonRawBody(true);
+
+            foreach ($rawBody as $key => $value) {
+                if ($key == 'id_no') {
+                    $id_no = $locator->sanitize($value, 'striptags');
+                }
+
+                if ($key == 'username') {
+                    $username = $locator->sanitize($value, 'striptags');
+                }
+
+                if ($key == 'fullname') {
+                    $fullname = $locator->sanitize($value, 'striptags');
+                }
+
+                if ($key == 'permission_arr') {
+                    $permission_arr = $locator->sanitize($value, 'striptags');
+                }
+
+                if ($key == 'active') {
+                    $active = $locator->sanitize($value, 'striptags');
+                }
+                
+            }
+
+
+            $update_basic_info = (new helper())->updateBasicInfo($id_no,$username,$fullname,$permission_arr,$active);
+
+            $status = $update_basic_info[0]['status'];
+
+            switch($status) {
+                case "update_fail":
+                    $arr[] = array("status" => "fail");
+                break;
+                case "update_success":
+
+                    // Audit Log
+                    $uid = $this->session->get("acc_uid");
+                    $transaction_type = "UPDATE";
+                    $msg  = "Updated Record No. (".$id_no.") SET Username = ".$uid.", Full Name = ".$fullname.", Permission = ".$permission_arr.", Active Status = ".$active;
+                    // Save Audit Log. Function is globally written on 'helper/helper.php'
+                    $save_to_auditlog  = (new helper())->auditLog($uid,$transaction_type,$msg);
+
+                    
+
+
+                    $arr[] = array("status" => "success");
+                break;
+                default:
+                    $arr[] = array("status" => "invalid_transaction");
+                break;
+            }
+
+        }
+
+        $this->response->setJsonContent($arr);
+        $this->response->send();
+    }
+
+    public function updateProfilePicAction()
+    {
+        $this->view->disable();
+
+        $final_arr = array();
+        $extension_arr = ['jpg','jpeg','JPG','JPEG','png','PNG','tif','TIF','gif','GIF'];
+
+        if ($this->request->isPost()) {
+            $uid = $this->request->getPost('uid', ['striptags', 'string']);
+
+            if ($this->request->hasFiles()) {
+                $files = $this->request->getUploadedFiles();
+
+                foreach ($files as $file) {
+                    // echo $file->getName(), ' ', $file->getSize(), '\n'
+                    // $files_arr[] = array(
+                    //     "file_name" => $val->getName(),
+                    //     "file_extension" => $val->getExtension(),
+                    //     "cover_letter" => $decode_cover_letter_arr[$key]['cover_letter']
+                    // );
+
+                    // $files_arr[] = array(
+                    //     "file_name" => $val->getName(),
+                    //     "file_extension" => $val->getExtension(),
+                    //     "cover_letter" => false
+                    // );
+
+                    // check file size
+                    if ($file->getSize() > 1048576) {
+                        $final_arr[] = array('status' => 'file_too_large');
+                    } else if (!in_array($file->getExtension(),$extension_arr)) {
+                        $final_arr[] = array('status' => 'format_not_supported');
+                    } else {
+                        // update database and move the file to directory
+                        $fileName = $file->getName();
+                        $update = (new helper())->updateProfilePicture($uid,$fileName);
+                        $current_filename = $update[0]['current_filename'];
+                        $status = $update[0]['status'];
+
+                        switch($status) {
+                            case "update_fail":
+                                $final_arr[] = array("status" => "fail");
+                            break;
+                            case "update_success":
+
+                                // Audit Log
+                                $uid = $this->session->get("acc_uid");
+                                $transaction_type = "UPDATE";
+                                $msg  = "Updated Profile Picture of Account No. (".$uid.")";
+                                // Save Audit Log. Function is globally written on 'helper/helper.php'
+                                $save_to_auditlog  = (new helper())->auditLog($uid,$transaction_type,$msg);
+
+                                $final_arr[] = array("status" => "success", "profile_pic" => $fileName);
+
+                                if ($current_filename == "no_picture.png") {
+                                    $file->moveTo(
+                                        'files/profile-pic/'.$fileName 
+                                    );
+                                } else {
+                                    unlink('files/profile-pic/'.$current_filename);
+                                    $file->moveTo(
+                                        'files/profile-pic/'.$fileName 
+                                    );
+                                }
+
+                            break;
+                            default:
+                                $final_arr[] = array("status" => "invalid_transaction");
+                            break;
+                        }
+                    }
+
+                }
+            }
+        }
+
+        $this->response->setJsonContent($final_arr);
+        $this->response->send();
+    }
+
+    public function updatePasswordAction()
+    {
+        $this->view->disable();
+        $arr = array();
+
+        if ($this->request->isPost()) {
+
+            $rawBody = $this->request->getJsonRawBody(true);
+
+            foreach ($rawBody as $key => $value) {
+                if ($key == 'id_no') {
+                    $id_no = $value;
+                }
+
+                if ($key == 'password') {
+                    $password = $value;
+                }
+            }
+
+            $final_password = $this->security->hash($password);
+
+            $update = (new helper())->updatePasswordofAccount($id_no,$final_password);
+            $status = $update[0]['status'];
+
+            switch($status) {
+                case "update_fail":
+                    $arr[] = array("status" => "fail");
+                break;
+                case "update_success":
+
+                    // Audit Log
+                    $uid = $this->session->get("acc_uid");
+                    $transaction_type = "UPDATE";
+                    $msg  = "Updated Password of Account No. (".$uid.") to ".$password;
+                    // Save Audit Log. Function is globally written on 'helper/helper.php'
+                    $save_to_auditlog  = (new helper())->auditLog($uid,$transaction_type,$msg);
+
+                    $arr[] = array("status" => "success");
+                break;
+                default:
+                    $arr[] = array("status" => "invalid_transaction");
+                break;
+            }
+
+        }
+
+        $this->response->setJsonContent($arr);
+        $this->response->send();
+    }
+
+    public function unlockAction()
+    {
+        $this->view->disable();
+
+        $arr = array();
+
+        if ($this->request->isPost()) {
+
+            $factory = new FilterFactory();
+            $locator = $factory->newInstance();
+
+            $rawBody = $this->request->getJsonRawBody(true);
+
+
+            foreach ($rawBody as $key => $value) {
+                if ($key == 'username') {
+                    $username = $locator->sanitize($value, 'striptags');
+                }
+            }
+
+            $unlock_account = (new helper())->unlockAccount($username);
+            $status = $unlock_account[0]['status'];
+
+            switch($status) {
+                case "reset_fail":
+                    $arr[] = array("status" => "fail");
+                break;
+                case "reset_success":
+
+                    // Audit Log
+                    $uid = $this->session->get("acc_uid");
+                    $transaction_type = "UPDATE";
+                    $msg  = "Update Login Attempts of Account (".$username.")";
+                    // Save Audit Log. Function is globally written on 'helper/helper.php'
+                    $save_to_auditlog  = (new helper())->auditLog($uid,$transaction_type,$msg);
+
+                    $arr[] = array("status" => "success");
+                break;
+                default:
+                    $arr[] = array("status" => "invalid_transaction");
+                break;
+            }
+
+        }
+
+        $this->response->setJsonContent($arr);
+        $this->response->send();
+    }
 
 }
 

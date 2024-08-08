@@ -397,7 +397,7 @@ class helper extends Injectable {
 
     public function unlockAccount($username)
     {
-        $reset_attempt = LoginAttempt::findFirst(
+        $reset_attempt = Users::findFirst(
             [
                 "column" => "attempt_count",
                 "conditions" => "username = :u_n:",

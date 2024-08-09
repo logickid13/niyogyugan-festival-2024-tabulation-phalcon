@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Aug 07, 2024 at 09:43 AM
+-- Generation Time: Aug 09, 2024 at 07:27 AM
 -- Server version: 10.3.17-MariaDB
 -- PHP Version: 7.3.9
 
@@ -162,6 +162,24 @@ INSERT INTO `contests` (`c_id`, `c_name`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `float_votes`
+--
+
+CREATE TABLE `float_votes` (
+  `ID` bigint(20) NOT NULL,
+  `EMAIL` varchar(255) NOT NULL,
+  `FULLNAME` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+  `ADDRESS` varchar(255) NOT NULL,
+  `CELLPHONE_NUMBER` varchar(11) NOT NULL,
+  `FACEBOOK_PROFILE` varchar(255) NOT NULL,
+  `DATA_PRIVACY` tinyint(1) NOT NULL COMMENT 'In compliance with the requirements of Republic Act No. 10773 otherwise known as the Data Privacy Act of 2012, the Provincial Tourism commits to ensure that all personal information obtained will be secured and remain confidential. Collected personal information will only be utilized for purpose of validation. The personal information shall not be shared or disclosed with other parties without consent unless the disclosure is required by, or in compliance with applicable laws and regulations.',
+  `FLOAT_VOTE_CHOICES` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+  `DATE_REGISTERED` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `list_of_activities`
 --
 
@@ -261,23 +279,6 @@ INSERT INTO `municipalities` (`munic_id`, `munic_name`, `munic_dist`) VALUES
 (39, 'TAYABAS CITY', 1),
 (40, 'TIAONG', 2),
 (41, 'UNISAN', 3);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `registered_voters`
---
-
-CREATE TABLE `registered_voters` (
-  `ID` bigint(20) NOT NULL,
-  `EMAIL` varchar(255) NOT NULL,
-  `FULLNAME` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
-  `CELLPHONE_NUMBER` varchar(11) NOT NULL,
-  `SNS_ACCOUNT` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
-  `AGREEMENT_TO_TERM_AND_CONDITIONS` tinyint(1) NOT NULL,
-  `FLOAT_VOTE_CHOICES` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
-  `DATE_REGISTERED` datetime NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -1287,6 +1288,13 @@ ALTER TABLE `contests`
   ADD PRIMARY KEY (`c_id`);
 
 --
+-- Indexes for table `float_votes`
+--
+ALTER TABLE `float_votes`
+  ADD PRIMARY KEY (`ID`),
+  ADD UNIQUE KEY `FACEBOOK_PROFILE` (`FACEBOOK_PROFILE`);
+
+--
 -- Indexes for table `list_of_activities`
 --
 ALTER TABLE `list_of_activities`
@@ -1297,13 +1305,6 @@ ALTER TABLE `list_of_activities`
 --
 ALTER TABLE `municipalities`
   ADD PRIMARY KEY (`munic_id`);
-
---
--- Indexes for table `registered_voters`
---
-ALTER TABLE `registered_voters`
-  ADD PRIMARY KEY (`ID`),
-  ADD UNIQUE KEY `EMAIL` (`EMAIL`);
 
 --
 -- Indexes for table `scores`
@@ -1336,6 +1337,12 @@ ALTER TABLE `contests`
   MODIFY `c_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID No.', AUTO_INCREMENT=24;
 
 --
+-- AUTO_INCREMENT for table `float_votes`
+--
+ALTER TABLE `float_votes`
+  MODIFY `ID` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `list_of_activities`
 --
 ALTER TABLE `list_of_activities`
@@ -1346,12 +1353,6 @@ ALTER TABLE `list_of_activities`
 --
 ALTER TABLE `municipalities`
   MODIFY `munic_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID No.', AUTO_INCREMENT=42;
-
---
--- AUTO_INCREMENT for table `registered_voters`
---
-ALTER TABLE `registered_voters`
-  MODIFY `ID` bigint(20) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `scores`

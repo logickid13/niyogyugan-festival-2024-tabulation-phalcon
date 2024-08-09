@@ -134,7 +134,6 @@ class AccountsController extends \Phalcon\Mvc\Controller
 
             $rawBody = $this->request->getJsonRawBody(true);
 
-
             foreach ($rawBody as $key => $value) {
                 if ($key == 'query') {
                     $query = $locator->sanitize($value, 'striptags');

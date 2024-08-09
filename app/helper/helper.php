@@ -780,24 +780,18 @@ class helper extends Injectable {
             ]
         );
 
-        if ($load_news->count() > 0) {
-            foreach ($load_news as $value) {
-                $news_article_date = new DateTimeImmutable($value->news_article_date, new DateTimeZone('Asia/Manila'));
-    
-                $arr[] = array(
-                    "news_id" => $value->news_id,
-                    "news_article_date" => $news_article_date->format('F j, Y'),
-                    "news_cover_img" => $value->news_cover_img,
-                    "news_title" => $value->news_title,
-                    "news_desc" => $value->news_desc,
-                    "news_link" => $value->news_link
-                );
-            }
-        } else {
-            $arr[] = array();
-        }
+        foreach ($load_news as $value) {
+            $news_article_date = new DateTimeImmutable($value->news_article_date, new DateTimeZone('Asia/Manila'));
 
-        
+            $arr[] = array(
+                "news_id" => $value->news_id,
+                "news_article_date" => $news_article_date->format('F j, Y'),
+                "news_cover_img" => $value->news_cover_img,
+                "news_title" => $value->news_title,
+                "news_desc" => $value->news_desc,
+                "news_link" => $value->news_link
+            );
+        }
 
         return $arr;
     }

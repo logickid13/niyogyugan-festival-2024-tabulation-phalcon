@@ -240,6 +240,15 @@ $router->add(
     ]
 );
 
+// Float - New Vote
+$router->add(
+    $server.'floatVotingManagment/addNewVote',
+    [
+        'controller' => 'floatVotingManagment',
+        'action'     => 'addNewVote'
+    ]
+);
+
 
 
 $router->handle($_SERVER['REQUEST_URI']);

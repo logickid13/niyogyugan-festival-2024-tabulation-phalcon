@@ -44,7 +44,15 @@ class FloatVotingManagmentController extends \Phalcon\Mvc\Controller
                     $address = $locator->sanitize($value, 'striptags');
                 }
                 if ($key == 'data_privacy') {
-                    $data_privacy = $locator->sanitize($value, 'striptags');
+                    switch ($locator->sanitize($value, 'striptags')) {
+                        case true:
+                            $data_privacy = 1;
+                            break;
+
+                        case false:
+                            $data_privacy = 0;
+                            break;
+                    }
                 }
                 if ($key == 'municipalitySelections') {
                     $municipalitySelections = json_encode($value);
@@ -52,7 +60,7 @@ class FloatVotingManagmentController extends \Phalcon\Mvc\Controller
             }
 
             $is_existing = FloatVotes::findFirst(array(
-                "conditions" => "FACEBOOK_PROFILE = :1:",
+                "conditions" => "facebook_profile = :1:",
                 "bind"       => array("1" => $facebook)
             ));
 
@@ -63,14 +71,14 @@ class FloatVotingManagmentController extends \Phalcon\Mvc\Controller
                 
                 default:
                     $new_vote = new FloatVotes();
-                    $new_vote->fULLNAME            = $fullname;
-                    $new_vote->eMAIL               = $email;
-                    $new_vote->cELLPHONE_NUMBER    = $facebook;
-                    $new_vote->fACEBOOK_PROFILE    = $mobileno;
-                    $new_vote->aDDRESS             = $address;
-                    $new_vote->dATA_PRIVACY        = $data_privacy;
-                    $new_vote->fLOAT_VOTE_CHOICES  = $municipalitySelections;
-                    $new_vote->dATE_REGISTERED     = $date_today->format('Y-m-d H:i:s');
+                    $new_vote->email               = $email;
+                    $new_vote->fullname            = $fullname;
+                    $new_vote->address             = $address;
+                    $new_vote->cellphone_number    = $mobileno;
+                    $new_vote->facebook_profile    = $facebook;
+                    $new_vote->data_privacy        = 1;
+                    $new_vote->float_vote_choices  = $municipalitySelections;
+                    $new_vote->date_registered     = $date_today->format('Y-m-d H:i:s');
         
                     if ($new_vote->save() == false) {
                         $arr[] = array("status" => "fail");

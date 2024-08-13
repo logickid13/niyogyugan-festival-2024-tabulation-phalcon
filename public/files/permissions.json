@@ -104,6 +104,26 @@
             "isEditable": false
           }
         ]
+      },
+      {
+        "id": 6,
+        "permission": "Float",
+        "isSelected": false,
+        "isEditable": false,
+        "sub_permission": [
+          {
+            "id": 6.01,
+            "permission": "Current Ranking",
+            "isSelected": false,
+            "isEditable": false
+          },
+          {
+            "id": 6.01,
+            "permission": "List of Voters per Municipality",
+            "isSelected": false,
+            "isEditable": false
+          }
+        ]
       }
     ]
 }

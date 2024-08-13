@@ -240,12 +240,21 @@ $router->add(
     ]
 );
 
-// Float - New Vote
+// Float - Ranks
 $router->add(
-    $server.'floatVotingManagment/addNewVote',
+    $server.'floatVotingManagment/ranking',
     [
         'controller' => 'floatVotingManagment',
-        'action'     => 'addNewVote'
+        'action'     => 'ranking'
+    ]
+);
+
+// Float - List of voters per float/municipalit
+$router->add(
+    $server.'floatVotingManagment/votersData',
+    [
+        'controller' => 'floatVotingManagment',
+        'action'     => 'votersData'
     ]
 );
 

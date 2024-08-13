@@ -28,7 +28,7 @@ class FloatVotes extends \Phalcon\Mvc\Model
      *
      * @var string
      */
-    public $address;
+    public $voters_address;
 
     /**
      *

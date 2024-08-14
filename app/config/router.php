@@ -285,6 +285,24 @@ $router->add(
     ]
 );
 
+// Float - Ranks
+$router->add(
+    $server.'floatVotingManagment/ranking',
+    [
+        'controller' => 'floatVotingManagment',
+        'action'     => 'ranking'
+    ]
+);
+
+// Float - List of voters per float/municipalit
+$router->add(
+    $server.'floatVotingManagment/votersData',
+    [
+        'controller' => 'floatVotingManagment',
+        'action'     => 'votersData'
+    ]
+);
+
 
 
 $router->handle($_SERVER['REQUEST_URI']);

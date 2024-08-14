@@ -1,5 +1,8 @@
 <?php
 
+use Phalcon\Validation;
+use Phalcon\Validation\Validator\Email as EmailValidator;
+
 class FloatVotes extends \Phalcon\Mvc\Model
 {
 
@@ -7,55 +10,77 @@ class FloatVotes extends \Phalcon\Mvc\Model
      *
      * @var integer
      */
-    public $iD;
+    public $id;
 
     /**
      *
      * @var string
      */
-    public $eMAIL;
+    public $email;
 
     /**
      *
      * @var string
      */
-    public $fULLNAME;
+    public $fullname;
 
     /**
      *
      * @var string
      */
-    public $aDDRESS;
+    public $voters_address;
 
     /**
      *
      * @var string
      */
-    public $cELLPHONE_NUMBER;
+    public $cellphone_number;
 
     /**
      *
      * @var string
      */
-    public $fACEBOOK_PROFILE;
+    public $facebook_profile;
 
     /**
      *
      * @var integer
      */
-    public $dATA_PRIVACY;
+    public $data_privacy;
 
     /**
      *
      * @var string
      */
-    public $fLOAT_VOTE_CHOICES;
+    public $float_vote_choices;
 
     /**
      *
      * @var string
      */
-    public $dATE_REGISTERED;
+    public $date_registered;
+
+    /**
+     * Validations and business logic
+     *
+     * @return boolean
+     */
+    public function validation()
+    {
+        $validator = new Validation();
+
+        $validator->add(
+            'email',
+            new EmailValidator(
+                [
+                    'model'   => $this,
+                    'message' => 'Please enter a correct email address',
+                ]
+            )
+        );
+
+        return $this->validate($validator);
+    }
 
     /**
      * Initialize method for model.

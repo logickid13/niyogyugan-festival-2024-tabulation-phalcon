@@ -62,15 +62,10 @@ class FloatVotingManagmentController extends \Phalcon\Mvc\Controller
                 }
             }
 
-            // $is_existing = FloatVotes::findFirst(array(
-            //     "conditions" => "facebook_profile = :1:",
-            //     "bind"       => array("1" => $facebook)
-            // ));
-
             $is_existing = FloatVotes::findFirst(array(
                 "conditions" => "fullname = :1: AND voters_address = :2:",
                 "bind"       => array(
-                    "1" => $facebook,
+                    "1" => $fullname,
                     "2" => $address
                 )
             ));
